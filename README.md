@@ -18,8 +18,8 @@ You can build with luarocks or cmake.
 * [Implementation Notes](#implementation-notes)
   * [Metadata Blocks](#metadata-blocks)
   * [64-bit Values](#64-bit-values)
-# [Decoder Functions](#decoder-functions)
-# [Encoder Functions](#encoder-functions)
+* [Decoder Functions](#decoder-functions)
+* [Encoder Functions](#encoder-functions)
 
 # Synopsis
 
