@@ -8,7 +8,9 @@ int luaopen_luaflac_export(lua_State *L) {
     luaflac_push_const(FLAC_API_VERSION_CURRENT);
     luaflac_push_const(FLAC_API_VERSION_REVISION);
     luaflac_push_const(FLAC_API_VERSION_AGE);
-    luaflac_push_const(FLAC_API_SUPPORTS_OGG_FLAC);
+
+    lua_pushboolean(L,FLAC_API_SUPPORTS_OGG_FLAC);
+    lua_setfield(L,-2,"FLAC_API_SUPPORTS_OGG_FLAG");
 
     return 1;
 }
