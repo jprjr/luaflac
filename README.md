@@ -185,8 +185,7 @@ the length-related fields (`length`, `num_comments`, etc).
 
 For example, a `VORBIS_COMMENT` block has
 `num_comments` field for the number of vorbis comment entries.
-
-When converted from/to Lua, voris comment entries are represented
+When converted from/to Lua, vorbis comment entries are represented
 as a Lua table, `num_comments` is ignored, and the length of the table
 is used instead.
 
@@ -200,6 +199,7 @@ encoder:set_metadata({{
     comments = {
       "ARTIST=Some Artist",
       "ALBUM=Some Artist",
+      "TITLE=A Great Song",
     },
   },
 }})
