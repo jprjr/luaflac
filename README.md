@@ -237,11 +237,9 @@ the libFLAC documentation, I try to use the same function names and parameters.
 
 The exceptions to that rule are:
 
-* `*_init_stream` and `*_init_file` functions, they accept their parameters in a table.
-* functions with an out-variable return either:
-  * the out-variable (example: `FLAC__stream_decoder_get_position` will return a `uint64` value)
-  * a table of out-variables (example: `FLAC__stream_encoder_get_verify_decoder_error_stats` will
-  return a table with entries named `absolute_sample`, `frame_number`, etc).
+* `*_init_stream`, `*_init_file`, `*_init_ogg_stream`, and `*_init_ogg_file` functions accept their parameters in a table.
+* functions with an out-variable return the out-variable (example: `FLAC__stream_decoder_get_position` will return a `uint64` value, not
+the boolean that the C library returns).
 
 ## FLAC\_\_stream_decoder\_new
 
@@ -330,9 +328,8 @@ the libFLAC documentation, I try to use the same function names and parameters.
 
 The exceptions to that rule are:
 
-* `*_init_stream` and `*_init_file` functions, they accept their parameters in a table.
-* functions with an out-variable return:
-  * a table of out-variables (example: `FLAC__stream_encoder_get_verify_decoder_error_stats` will
+* `*_init_stream`, `*_init_file`, `*_init_ogg_stream`, and `*_init_ogg_file` functions accept their parameters in a table.
+* functions with multiple out-variables return a table of out-variables (example: `FLAC__stream_encoder_get_verify_decoder_error_stats` will
   return a table with entries named `absolute_sample`, `frame_number`, etc).
 
 ## FLAC\_\_stream\_encoder\_new
