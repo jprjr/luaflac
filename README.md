@@ -19,7 +19,9 @@ You can build with luarocks or cmake.
   * [Metadata Blocks](#metadata-blocks)
   * [64-bit Values](#64-bit-values)
 * [Decoder Functions](#decoder-functions)
+* [Decoder Callbacks](#decoder-callbacks)
 * [Encoder Functions](#encoder-functions)
+* [Encoder Callbacks](#encoder-callbacks)
 
 # Synopsis
 
@@ -320,6 +322,99 @@ Optional keys:
 * `length` - a callback to get the length of the stream (required if `seek` is given)
 * `eof` - a callback to determine if we've reached the end of the stream. (required if `seek` is given)
 * `userdata` - a value to pass to callbacks, always used as the first parameter.
+
+# Decoder Callbacks
+
+Here's the function signatures expected for decoder callbacks:
+
+## read
+
+`string bytes = read(userdata, number size)`
+
+A `read` callback will receive your `userdata` as the first parameter,
+and the number of bytes to read as the second parameter.
+
+On success, return a string of bytes.
+
+Returning an empty string, `nil`, or `true` will tell libFLAC we've reached
+the end of the file. Returning `false` will tell libFLAC to abort.
+
+## seek
+
+`boolean success = seek(userdata, FLAC__uint64 absolute_byte_offset)`
+
+A `seek` callback will receive your `userdata` as the first
+parameter, and the absolute stream position as a `FLAC__uint64`
+userdata.
+
+Return a true on success, false on error.
+
+## tell
+
+`flac__uint64 position = tell(userdata)`
+
+A `tell` callback will receive your `userdata` as the only
+parameter.
+
+It should return the current, absolute position in the stream.
+It can return anything convertible to a `FLAC__uint64` value (a number, string,
+or your own `FLAC__uint64`).
+
+Returning a `nil` or `false` will trigger an error.
+
+## length
+
+`flac__uint64 position = length(userdata)`
+
+A `length` callback will receive your `userdata` as the only
+parameter.
+
+It should return the total length of the stream.
+It can return anything convertible to a `FLAC__uint64` value (a number, string,
+or your own `FLAC__uint64`).
+
+Returning a `nil` or `false` will trigger an error.
+
+## eof
+
+`boolean success = eof(userdata)`
+
+A `eof` callback will receive your `userdata` as the only
+parameter.
+
+Return a true on end-of-file, false otherwise.
+
+## metadata
+
+`metadata(userdata, table metadata)`
+
+A `metadata` callback will receive your `userdata` as the first
+parameter, and a table representing the current metadata block
+as the second.
+
+See the above implementation notes for the structure of the metadata table.
+
+Return value is ignored.
+
+## error
+
+`error(userdata, number code)`
+
+An `error` callback will receive your `userdata` as the first
+parameter, and a number representing the error as your second.
+
+Return value is ignored.
+
+## write
+
+`boolean success = write(userdata, table frame, table samples[][])`
+
+A `write` callback will receive your `userdata` as the first parameter,
+a table with the current FLAC frame's header, subframes, and footer,
+and a multidimensional table of samples. The first dimension is channel,
+then the sample index. Actual samples are integer values.
+
+Return something truthy on success, falsey on error.
 
 # Encoder Functions
 
