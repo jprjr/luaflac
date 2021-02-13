@@ -308,7 +308,7 @@ luaflac_stream_decoder_tell_callback(const FLAC__StreamDecoder *decoder, FLAC__u
     /* assumption is if tell is not supported, then
      * the tell callback should be nil */
 
-    if(lua_isnumber(u->L,-1)) {
+    if(lua_isnumber(u->L,-1) || luaL_testudata(u->L,-1,luaflac_uint64_mt) || lua_isstring(u->L,-1)) {
         status = FLAC__STREAM_DECODER_TELL_STATUS_OK;
         *absolute_byte_offset = luaflac_touint64(u->L,-1);
     } else {
@@ -341,7 +341,7 @@ luaflac_stream_decoder_length_callback(const FLAC__StreamDecoder *decoder, FLAC_
     /* assumption is if lengthing is not supported, then
      * the length callback should be nil */
 
-    if(lua_isnumber(u->L,-1)) {
+    if(lua_isnumber(u->L,-1) || luaL_testudata(u->L,-1,luaflac_uint64_mt) || lua_isstring(u->L,-1)) {
         status = FLAC__STREAM_DECODER_LENGTH_STATUS_OK;
         *stream_length = luaflac_touint64(u->L,-1);
     } else {

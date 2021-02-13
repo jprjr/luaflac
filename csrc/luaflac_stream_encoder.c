@@ -584,7 +584,7 @@ luaflac_stream_encoder_tell_callback(const FLAC__StreamEncoder *encoder, FLAC__u
     /* assumption is if tell is not supported, then
      * the tell callback should be nil */
 
-    if(lua_isnumber(u->L,-1)) {
+    if(lua_isnumber(u->L,-1) || luaL_testudata(u->L,-1,luaflac_uint64_mt) || lua_isstring(u->L,-1)) {
         status = FLAC__STREAM_ENCODER_TELL_STATUS_OK;
         *absolute_byte_offset = luaflac_touint64(u->L,-1);
     } else {
