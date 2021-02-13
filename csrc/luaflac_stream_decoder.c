@@ -1,4 +1,4 @@
-#include "luaflac-internal.h"
+#include "luaflac_internal.h"
 #include <FLAC/stream_decoder.h>
 
 #include <string.h>

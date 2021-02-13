@@ -1,4 +1,4 @@
-#include "luaflac-internal.h"
+#include "luaflac_internal.h"
 #include <FLAC/export.h>
 
 int

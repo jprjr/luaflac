@@ -21,6 +21,7 @@ build = {
       libraries = "FLAC",
       sources = {
         "csrc/luaflac.c",
+        "csrc/luaflac_internal.c",
         "csrc/luaflac_int64.c",
         "csrc/luaflac_no_ogg.c",
         "csrc/luaflac_export.c",

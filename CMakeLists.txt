@@ -39,6 +39,7 @@ install(FILES "src/luaflac/version.lua"
 set(luaflac_sources)
 list(APPEND luaflac_sources "csrc/luaflac.c")
 list(APPEND luaflac_sources "csrc/luaflac_int64.c")
+list(APPEND luaflac_sources "csrc/luaflac_internal.c")
 list(APPEND luaflac_sources "csrc/luaflac_no_ogg.c")
 list(APPEND luaflac_sources "csrc/luaflac_export.c")
 list(APPEND luaflac_sources "csrc/luaflac_format.c")

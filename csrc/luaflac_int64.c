@@ -1,4 +1,4 @@
-#include "luaflac-internal.h"
+#include "luaflac_internal.h"
 #include <errno.h>
 #include <ctype.h>
 #include <assert.h>

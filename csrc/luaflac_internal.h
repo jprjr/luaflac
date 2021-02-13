@@ -14,25 +14,10 @@ typedef struct luaflac_metamethods_s {
 } luaflac_metamethods;
 
 
-#if !defined(luaL_newlibtable) \
-  && (!defined LUA_VERSION_NUM || LUA_VERSION_NUM==501)
-static void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
-    luaL_checkstack(L, nup+1, "too many upvalues");
-    for (; l->name != NULL; l++) {  /* fill the table with given functions */
-        int i;
-        lua_pushlstring(L, l->name,strlen(l->name));
-        for (i = 0; i < nup; i++)  /* copy upvalues to the top */
-            lua_pushvalue(L, -(nup+1));
-        lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
-        lua_settable(L, -(nup + 3));
-    }
-    lua_pop(L, nup);  /* remove upvalues */
-}
-#endif
-
 #if (!defined LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 #define lua_setuservalue(L,i) lua_setfenv((L),(i))
 #define lua_getuservalue(L,i) lua_getfenv((L),(i))
+#define lua_rawlen(L,i) lua_objlen((L),(i))
 #endif
 
 #define luaflac_push_const(x) lua_pushinteger(L,x) ; lua_setfield(L,-2, #x)
@@ -78,6 +63,18 @@ extern const char * const luaflac_int64_mt;
 
 LUAFLAC_PRIVATE
 extern const char * const luaflac_metadata_mt;
+
+#if !defined(luaL_newlibtable) \
+  && (!defined LUA_VERSION_NUM || LUA_VERSION_NUM==501)
+LUAFLAC_PRIVATE
+void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);
+
+LUAFLAC_PRIVATE
+void luaL_setmetatable(lua_State *L, const char *str);
+
+LUAFLAC_PRIVATE
+void *luaL_testudata (lua_State *L, int i, const char *tname);
+#endif
 
 #ifdef __cplusplus
 }

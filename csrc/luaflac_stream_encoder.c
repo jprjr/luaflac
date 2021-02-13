@@ -1,4 +1,4 @@
-#include "luaflac-internal.h"
+#include "luaflac_internal.h"
 #include <FLAC/stream_encoder.h>
 #include <FLAC/metadata.h>
 
@@ -15,6 +15,12 @@ struct luaflac_encoder_userdata_s {
     FLAC__StreamEncoder *encoder;
     FLAC__StreamMetadata **metadata;
     unsigned num_blocks;
+    FLAC__int32 **planar;
+    FLAC__int32 *buffer;
+    int buffer_ref;
+    int planar_ref;
+    unsigned int channels;
+    unsigned int samples;
 };
 
 typedef struct luaflac_encoder_userdata_s luaflac_encoder_userdata;
@@ -50,6 +56,18 @@ luaflac_stream_encoder_delete(lua_State *L) {
         u->table_ref = LUA_NOREF;
     }
 
+    if(u->buffer_ref != LUA_NOREF) {
+        luaL_unref(L,LUA_REGISTRYINDEX,u->buffer_ref);
+        u->buffer_ref = LUA_NOREF;
+    }
+
+    if(u->planar_ref != LUA_NOREF) {
+        luaL_unref(L,LUA_REGISTRYINDEX,u->planar_ref);
+        u->planar_ref = LUA_NOREF;
+    }
+    u->channels = 0;
+    u->samples = 0;
+
     luaflac_stream_encoder_free_metadata(L,u);
 
     return 0;
@@ -77,6 +95,13 @@ luaflac_stream_encoder_new(lua_State *L) {
     u->table_ref = luaL_ref(u->L,LUA_REGISTRYINDEX);
 
     luaL_setmetatable(L,luaflac_stream_encoder_mt);
+
+    u->planar = NULL;
+    u->buffer = NULL;
+    u->planar_ref = LUA_NOREF;
+    u->buffer_ref = LUA_NOREF;
+    u->channels = 0;
+    u->samples = 0;
 
     return 1;
 }
@@ -106,6 +131,7 @@ static int
 luaflac_stream_encoder_set_channels(lua_State *L) {
     luaflac_encoder_userdata *u = luaL_checkudata(L,1,luaflac_stream_encoder_mt);
     lua_pushboolean(L,FLAC__stream_encoder_set_channels(u->encoder,lua_tointeger(L,2)));
+    u->channels = FLAC__stream_encoder_get_channels(u->encoder);
     return 1;
 }
 
@@ -821,6 +847,44 @@ luaflac_stream_encoder_finish(lua_State *L) {
     return 1;
 }
 
+static inline void
+luaflac_resize_buffers(lua_State *L, luaflac_encoder_userdata *u, unsigned int channels, unsigned int samples) {
+    unsigned int s = 0;
+    unsigned int total = channels * samples;
+    FLAC__int32 **planar;
+    if(u->channels < channels || u->samples < samples) {
+        if(u->planar != NULL) {
+            luaL_unref(L,LUA_REGISTRYINDEX,u->planar_ref);
+            u->planar_ref = LUA_NOREF;
+            u->planar = NULL;
+        }
+        if(u->buffer != NULL) {
+            luaL_unref(L,LUA_REGISTRYINDEX,u->buffer_ref);
+            u->buffer_ref = LUA_NOREF;
+            u->buffer = NULL;
+        }
+        u->buffer = lua_newuserdata(L,sizeof(FLAC__int32) * total);
+        if(u->buffer == NULL) {
+            luaL_error(L,"out of memory");
+        }
+        u->buffer_ref = luaL_ref(L,LUA_REGISTRYINDEX);
+        u->planar = lua_newuserdata(L,sizeof(FLAC__int32 *) * channels);
+        if(u->planar == NULL) {
+            luaL_error(L,"out of memory");
+        }
+        u->planar_ref = luaL_ref(L,LUA_REGISTRYINDEX);
+        u->channels = channels;
+        u->samples = samples;
+    }
+
+    planar = u->planar;
+
+    while(s<total) {
+      *planar++ = &(u->buffer[s]);
+      s += samples;
+    }
+}
+
 static int
 luaflac_stream_encoder_process(lua_State *L) {
     luaflac_encoder_userdata *u = luaL_checkudata(L,1,luaflac_stream_encoder_mt);
@@ -828,13 +892,12 @@ luaflac_stream_encoder_process(lua_State *L) {
     unsigned int samples = 0;
     unsigned int c = 0;
     unsigned int s = 0;
-    FLAC__int32 **buffer = NULL;
 
-    buffer = lua_newuserdata(L,sizeof(FLAC__int32 *) * channels);
-    if(buffer == NULL) {
-        return luaL_error(L,"out of memory");
-    }
+    lua_rawgeti(L,2,c+1);
+    samples = lua_rawlen(L,-1);
     lua_pop(L,1);
+
+    luaflac_resize_buffers(L,u,channels,samples);
 
     while(c<channels) {
         lua_rawgeti(L,2,c+1);
@@ -847,16 +910,10 @@ luaflac_stream_encoder_process(lua_State *L) {
             }
         }
 
-        buffer[c] = lua_newuserdata(L,sizeof(FLAC__int32) * samples);
-        if(buffer[c] == NULL) {
-            return luaL_error(L,"out of memory");
-        }
-        lua_pop(L,1);
-
         s = 0;
         while(s<samples) {
             lua_rawgeti(L,-1,s+1);
-            buffer[c][s] = lua_tointeger(L,-1);
+            u->planar[c][s] = lua_tointeger(L,-1);
             lua_pop(L,1);
             s++;
         }
@@ -865,7 +922,7 @@ luaflac_stream_encoder_process(lua_State *L) {
     }
 
     lua_pushboolean(L,FLAC__stream_encoder_process(u->encoder,
-      (const FLAC__int32 *const *)buffer,
+      (const FLAC__int32 *const *)u->planar,
       samples));
     return 1;
 }
@@ -877,23 +934,18 @@ luaflac_stream_encoder_process_interleaved(lua_State *L) {
     unsigned int s = lua_rawlen(L,2);
     unsigned int samples = s / channels;
     unsigned int c = 0;
-    FLAC__int32 *buffer = NULL;
 
-    buffer = lua_newuserdata(L,sizeof(FLAC__int32) * channels * samples);
-    if(buffer == NULL) {
-        return luaL_error(L,"out of memory");
-    }
-    lua_pop(L,1);
+    luaflac_resize_buffers(L,u,channels,samples);
 
     while(c<s) {
         lua_rawgeti(L,2,c+1);
-        buffer[c] = lua_tointeger(L,-1);
+        u->buffer[c] = lua_tointeger(L,-1);
         lua_pop(L,1);
         c++;
     }
 
     lua_pushboolean(L,FLAC__stream_encoder_process_interleaved(u->encoder,
-      (const FLAC__int32 *)buffer,
+      u->buffer,
       samples));
     return 1;
 }
