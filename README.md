@@ -137,10 +137,10 @@ os.exit(0)
 
 ## Metadata Blocks
 
-`FLAC\_\_StreamMetadata` structs are converted to/from Lua tables on-the-fly, I try to follow
+`FLAC__StreamMetadata` structs are converted to/from Lua tables on-the-fly, I try to follow
 the same naming conventions and structure from the C library.
 
-Example, a `FLAC\_\_StreamMetadata` `STREAMINFO` block could be represented in Lua as:
+Example, a `FLAC__StreamMetadata` `STREAMINFO` block could be represented in Lua as:
 
 ```lua
 {
@@ -161,7 +161,7 @@ Example, a `FLAC\_\_StreamMetadata` `STREAMINFO` block could be represented in L
 }
 ```
 
-And a `FLAC\_\_StreamMetadata VORBIS_COMMENT` block could be represented in Lua as:
+And a `FLAC__StreamMetadata VORBIS_COMMENT` block could be represented in Lua as:
 
 ```lua
 {
@@ -222,7 +222,7 @@ Any function that accepts a 64-bit value as input will have the userdata
 created on-the-fly, if you use a number or string. Same for field
 entries on an input table.
 
-The constructor is available as `flac.FLAC\_\_uint64` and `flac.FLAC\_\_int64`, example:
+The constructor is available as `flac.FLAC__uint64` and `flac.FLAC__int64`, example:
 
 ```lua
 local i = luaflac.FLAC__int64('9223372036854775806') -- creates a new userdata
@@ -239,25 +239,25 @@ The exceptions to that rule are:
 
 * `*_init_stream` and `*_init_file` functions, they accept their parameters in a table.
 * functions with an out-variable return either:
-  * the out-variable (example: `FLAC\_\_stream_decoder_get_position` will return a `uint64` value)
+  * the out-variable (example: `FLAC__stream_decoder_get_position` will return a `uint64` value)
   * a table of out-variables (example: `FLAC__stream_encoder_get_verify_decoder_error_stats` will
   return a table with entries named `absolute_sample`, `frame_number`, etc).
 
 ## FLAC\_\_stream_decoder\_new
 
-**syntax:** `userdata state = flac.FLAC\_\_stream_decoder_new()`
+**syntax:** `userdata state = flac.FLAC__stream_decoder_new()`
 
 Returns a new stream decoder instance.
 
 Instance has a metatable set allowing for object-oriented usage. Basically,
-take any `FLAC\_\_stream_decoder_*` function and remove the `FLAC\_\_stream_decoder_` prefix,
+take any `FLAC__stream_decoder_*` function and remove the `FLAC__stream_decoder_` prefix,
 example:
 
-`state:get_channels()` is the same as `FLAC\_\_stream_decoder_get_channels(state)`
+`state:get_channels()` is the same as `FLAC__stream_decoder_get_channels(state)`
 
 ## FLAC\_\_stream_decoder_init_file
 
-**syntax:** `boolean success = FLAC\_\_stream_decoder_init_file(userdata state, table params)`
+**syntax:** `boolean success = FLAC__stream_decoder_init_file(userdata state, table params)`
 
 Sets up a decoder instance to decode a FLAC file, `params` requires the following keys:
 
@@ -272,7 +272,7 @@ Optional keys:
 
 ## FLAC\_\_stream_decoder_init_stream
 
-**syntax:** `boolean success = FLAC\_\_stream_decoder_init_stream(userdata state, table params)`
+**syntax:** `boolean success = FLAC__stream_decoder_init_stream(userdata state, table params)`
 
 Sets up a decoder instance to decode a FLAC stream, `params` requires the following keys:
 
@@ -291,7 +291,7 @@ Optional keys:
 
 ## FLAC\_\_stream_decoder_init_ogg_file
 
-**syntax:** `boolean success = FLAC\_\_stream_decoder_init_ogg_file(userdata state, table params)`
+**syntax:** `boolean success = FLAC__stream_decoder_init_ogg_file(userdata state, table params)`
 
 Sets up a decoder instance to decode a FLAC in Ogg file, `params` requires the following keys:
 
@@ -306,7 +306,7 @@ Optional keys:
 
 ## FLAC\_\_stream_decoder_init_ogg_stream
 
-**syntax:** `boolean success = FLAC\_\_stream_decoder_init_ogg_stream(userdata state, table params)`
+**syntax:** `boolean success = FLAC__stream_decoder_init_ogg_stream(userdata state, table params)`
 
 Sets up a decoder instance to decode a FLAC in Ogg stream, `params` requires the following keys:
 
@@ -337,19 +337,19 @@ The exceptions to that rule are:
 
 ## FLAC\_\_stream\_encoder\_new
 
-**syntax:** `userdata state = flac.FLAC\_\_stream_encoder_new()`
+**syntax:** `userdata state = flac.FLAC__stream_encoder_new()`
 
 Returns a new stream encoder instance.
 
 Instance has a metatable set allowing for object-oriented usage. Basically,
-take any `FLAC\_\_stream_encoder\_*` function and remove the `FLAC\_\_stream_encoder_` prefix,
+take any `FLAC__stream_encoder\_*` function and remove the `FLAC__stream_encoder_` prefix,
 example:
 
-`state:set_channels(num)` is the same as `FLAC\_\_stream_encoder_set_channels(state,num)`
+`state:set_channels(num)` is the same as `FLAC__stream_encoder_set_channels(state,num)`
 
 ## FLAC\_\_stream_encoder_init_file
 
-**syntax:** `boolean success = FLAC\_\_stream_encoder_init_file(userdata state, table params)`
+**syntax:** `boolean success = FLAC__stream_encoder_init_file(userdata state, table params)`
 
 Sets up a encoder instance to decode a FLAC file, `params` requires the following keys:
 
