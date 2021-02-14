@@ -496,6 +496,12 @@ Optional keys:
 * `tell` - a callback to get the absolute position of the stream (required if `read` is given)
 * `userdata` - a value to pass to callbacks, always used as the first parameter.
 
+## FLAC\_\_stream_encoder_set_metadata
+
+**syntax:** `boolean success = FLAC\_\_stream_encoder_set_metadata(userdata state, table metadata[])`
+
+Accepts an array-like table of metadata blocks.
+
 # Encoder Callbacks
 
 Here's the function signatures expected for encoder callbacks:
