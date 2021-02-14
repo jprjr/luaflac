@@ -498,9 +498,24 @@ Optional keys:
 
 ## FLAC\_\_stream_encoder_set_metadata
 
-**syntax:** `boolean success = FLAC\_\_stream_encoder_set_metadata(userdata state, table metadata[])`
+**syntax:** `boolean success = FLAC__stream_encoder_set_metadata(userdata state, table metadata[])`
 
 Accepts an array-like table of metadata blocks.
+
+## FLAC\_\_stream_encoder_process
+
+**syntax:** `boolean success = FLAC__stream_encoder_process(userdata state, table samples[][])`
+
+Send samples to the encoder, accepts a multidimensional table of samples. The first
+dimension is the audio channel, the second dimension is the sample, samples are
+32-bit integers.
+
+## FLAC\_\_stream_encoder_process_interleaved
+
+**syntax:** `boolean success = FLAC__stream_encoder_process_interleaved(userdata state, table samples[])`
+
+Send samples to the encoder, accepts a table of samples, interleaved.
+Samples are 32-bit integers.
 
 # Encoder Callbacks
 
