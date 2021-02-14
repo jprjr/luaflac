@@ -442,7 +442,7 @@ The exceptions to that rule are:
 Returns a new stream encoder instance.
 
 Instance has a metatable set allowing for object-oriented usage. Basically,
-take any `FLAC__stream_encoder\_*` function and remove the `FLAC__stream_encoder_` prefix,
+take any `FLAC__stream_encoder_*` function and remove the `FLAC__stream_encoder_` prefix,
 example:
 
 `state:set_channels(num)` is the same as `FLAC__stream_encoder_set_channels(state,num)`
