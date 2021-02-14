@@ -8,6 +8,14 @@ Currently covers the stream encoder and decoder APIs, including parsing/setting 
 
 # Installation
 
+Available on [luarocks](https://luarocks.org/modules/jprjr/luaflac):
+
+```bash
+luarocks install luaflac
+```
+
+Available on [AUR](https://aur.archlinux.org/pkgbase/lua-luaflac/)
+
 ## Building from source
 
 You can build with luarocks or cmake.
