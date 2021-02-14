@@ -33,7 +33,7 @@ configure_file(
 )
 
 install(FILES "src/luaflac/version.lua"
-  DESTINATION "${LUAMODULE_INSTALL_LIB_DIR}/"
+  DESTINATION "${LUAMODULE_INSTALL_LIB_DIR}/luaflac/"
 )
 
 set(luaflac_sources)
