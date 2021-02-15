@@ -613,8 +613,14 @@ luaflac_stream_decoder_init_stream(lua_State *L) {
       u);
 
     lua_pop(L,1);
+
+    if(status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+        lua_pushboolean(L,1);
+        return 1;
+    }
+    lua_pushnil(L);
     lua_pushinteger(L,status);
-    return 1;
+    return 2;
 }
 
 static int
@@ -689,8 +695,14 @@ luaflac_stream_decoder_init_file(lua_State *L) {
       u);
 
     lua_pop(L,1);
+
+    if(status == FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+        lua_pushboolean(L,1);
+        return 1;
+    }
+    lua_pushnil(L);
     lua_pushinteger(L,status);
-    return 1;
+    return 2;
 }
 
 static int

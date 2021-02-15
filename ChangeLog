@@ -1,0 +1,10 @@
+Version 2.0.0 (2020-02-15):
+  * encoder/decoder init functions now return true on succes, or nil and the
+  error code on failure.
+  * major bump since that's an API change
+
+Version 1.0.1 (2020-02-14):
+  * small fix to cmakelists.txt, no functional changes
+
+Version 1.0.0 (2020-02-14):
+  * initial release

@@ -617,7 +617,7 @@ luaflac_stream_encoder_progress_callback(const FLAC__StreamEncoder *encoder,
     lua_pushinteger(u->L,frames_written);
     lua_pushinteger(u->L,total_frames_estimate);
     lua_call(u->L,5,0);
-    
+
     lua_pop(u->L,1);
     assert(top == lua_gettop(u->L));
     (void)encoder;
@@ -654,7 +654,6 @@ luaflac_stream_encoder_init_stream(lua_State *L) {
     FLAC__StreamEncoderTellCallback tell_callback = NULL;
     FLAC__StreamEncoderMetadataCallback metadata_callback = NULL;
     FLAC__StreamEncoderInitStatus status = 0;
-    int top = lua_gettop(L);
 
     if(!lua_istable(L,2)) {
         return luaL_error(L,"missing parameter table");
@@ -708,9 +707,14 @@ luaflac_stream_encoder_init_stream(lua_State *L) {
       u);
 
     lua_pop(L,1);
+
+    if(status == FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
+        lua_pushboolean(L,1);
+        return 1;
+    }
+    lua_pushnil(L);
     lua_pushinteger(L,status);
-    assert(lua_gettop(L) == top + 1);
-    return 1;
+    return 2;
 }
 
 static int
@@ -722,7 +726,6 @@ luaflac_stream_encoder_init_ogg_stream(lua_State *L) {
     FLAC__StreamEncoderTellCallback tell_callback = NULL;
     FLAC__StreamEncoderMetadataCallback metadata_callback = NULL;
     FLAC__StreamEncoderInitStatus status = 0;
-    int top = lua_gettop(L);
 
     if(!lua_istable(L,2)) {
         return luaL_error(L,"missing parameter table");
@@ -785,9 +788,14 @@ luaflac_stream_encoder_init_ogg_stream(lua_State *L) {
       u);
 
     lua_pop(L,1);
+
+    if(status == FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
+        lua_pushboolean(L,1);
+        return 1;
+    }
+    lua_pushnil(L);
     lua_pushinteger(L,status);
-    assert(lua_gettop(L) == top + 1);
-    return 1;
+    return 2;
 }
 
 static int
@@ -836,8 +844,14 @@ luaflac_stream_encoder_init_file(lua_State *L) {
       u);
 
     lua_pop(L,1);
+
+    if(status == FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
+        lua_pushboolean(L,1);
+        return 1;
+    }
+    lua_pushnil(L);
     lua_pushinteger(L,status);
-    return 1;
+    return 2;
 }
 
 static int
