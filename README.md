@@ -116,7 +116,7 @@ assert(decoder:init_stream({
   write = decoder_write_callback,
   metadata = decoder_metadata_callback,
   error = decoder_error_callback,
-}) == flac.FLAC__STREAM_DECODER_INIT_STATUS_OK)
+}))
 
 -- before initializing the encoder, have decoder process through
 -- all the metadata (to ensure our metadata callback is called)
@@ -131,7 +131,7 @@ print(string.format('  sample_rate: %s',tostring(encoder:get_sample_rate())))
 -- we should have everything we need to init a stream
 assert(encoder:init_stream({
   write = encoder_write_callback
-}) == flac.FLAC__STREAM_ENCODER_INIT_STATUS_OK)
+}))
 
 -- do the rest of the conversion
 assert(decoder:process_until_end_of_stream())
