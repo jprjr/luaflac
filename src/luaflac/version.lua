@@ -1,4 +1,4 @@
-local VERSION_MAJOR = 2
+local VERSION_MAJOR = 3
 local VERSION_MINOR = 0
 local VERSION_PATCH = 0
 

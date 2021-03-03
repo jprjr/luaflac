@@ -342,10 +342,14 @@ Here's the function signatures expected for decoder callbacks:
 A `read` callback will receive your `userdata` as the first parameter,
 and the number of bytes to read as the second parameter.
 
-On success, return a string of bytes.
+On success, return a string of bytes, a boolean, or nil.
+It must not be larger than the requested size.
 
-Returning an empty string, `nil`, or `true` will tell libFLAC we've reached
-the end of the file. Returning `false` will tell libFLAC to abort.
+Returning `nil` or `false` will tell libFLAC we've reached the
+end of the stream. Returning `true` is like returning
+an empty string - we push no data into libFLAC, but tell
+it to continue reading anyway.
+
 
 ## seek
 
@@ -536,10 +540,14 @@ Here's the function signatures expected for encoder callbacks:
 A `read` callback will receive your `userdata` as the first parameter,
 and the number of bytes to read as the second parameter.
 
-On success, return a string of bytes.
+On success, return a string of bytes, a boolean, or nil.
+It must not be larger than the requested size.
 
-Returning an empty string, `nil`, or `true` will tell libFLAC we've reached
-the end of the file. Returning `false` will tell libFLAC to abort.
+Returning `nil` or `false` will tell libFLAC we've reached the
+end of the stream. Returning `true` is like returning
+an empty string - we push no data into libFLAC, but tell
+it to continue reading anyway.
+
 
 ## write
 

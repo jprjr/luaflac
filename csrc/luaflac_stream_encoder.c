@@ -462,24 +462,27 @@ luaflac_stream_encoder_read_callback(const FLAC__StreamEncoder *encoder, FLAC__b
     lua_call(u->L,2,1);
 
     /* return values:
-     *   nil = eof
-     *   true = eof
-     *   false = abort
-     *   string = continue
+     *   nil: 0 bytes, eof
+     *   false: 0 bytes, eof
+     *   true: 0 bytes, continue
+     *   anything else: convert to string
+     *     too many bytes? abort
+     *     string too short? that's fine, keep going
      */
 
     if(lua_isnil(u->L,-1)) {
+        *bytes = 0;
         status = FLAC__STREAM_ENCODER_READ_STATUS_END_OF_STREAM;
     } else if(lua_isboolean(u->L,-1)) {
-        status = lua_toboolean(u->L,-1) ? FLAC__STREAM_ENCODER_READ_STATUS_END_OF_STREAM :
-          FLAC__STREAM_ENCODER_READ_STATUS_ABORT;
+        *bytes = 0;
+        status = lua_toboolean(u->L,-1) ? FLAC__STREAM_ENCODER_READ_STATUS_CONTINUE :
+          FLAC__STREAM_ENCODER_READ_STATUS_END_OF_STREAM;
     } else {
         data = lua_tolstring(u->L,-1,&datalen);
         if(datalen > *bytes) {
+            *bytes = 0;
             luaL_error(u->L,"returned more bytes than requested");
             status = FLAC__STREAM_ENCODER_READ_STATUS_ABORT;
-        } else if(datalen == 0) {
-            status = FLAC__STREAM_ENCODER_READ_STATUS_END_OF_STREAM;
         } else {
             memcpy(buffer,data,datalen);
             *bytes = datalen;
